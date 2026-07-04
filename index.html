@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Трекер тренировок</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@700&display=swap');
+
+    :root {
+      --bg: #0f0f0f;
+      --surface: #1a1a1a;
+      --surface2: #242424;
+      --accent: #c8f135;
+      --text: #f0f0f0;
+      --muted: #777;
+      --danger: #ff4d4d;
+      --border: #2e2e2e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* AUTH SCREEN */
+    #auth-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .auth-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .auth-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 28px;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    .auth-sub {
+      color: var(--muted);
+      font-size: 14px;
+      margin-bottom: 32px;
+    }
+
+    .tab-row {
+      display: flex;
+      gap: 4px;
+      background: var(--surface2);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--accent);
+      color: #000;
+      font-weight: 600;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    input:focus { border-color: var(--accent); }
+
+    .btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+      margin-top: 8px;
+    }
+
+    .btn:hover { opacity: 0.85; }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+      width: auto;
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: 13px;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    /* APP SCREEN */
+    #app-screen { display: none; }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 20px;
+      color: var(--accent);
+    }
+
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 32px 20px;
+    }
+
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    /* ADD WORKOUT FORM */
+    .add-form {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    /* WORKOUT LIST */
+    .workout-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .workout-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color 0.2s;
+    }
+
+    .workout-card:hover { border-color: #444; }
+
+    .workout-type {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .workout-meta {
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .workout-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .accent-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state p { margin-top: 8px; font-size: 14px; }
+
+    .loading { color: var(--muted); text-align: center; padding: 40px; }
+  </style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="auth-screen">
+  <div class="auth-box">
+    <div class="auth-logo">💪 SportApp</div>
+    <div class="auth-sub">Отслеживай свои тренировки</div>
+
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="switchTab('login')">Войти</button>
+      <button class="tab-btn" onclick="switchTab('register')">Регистрация</button>
+    </div>
+
+    <div id="login-form">
+      <div class="form-group">
+        <label>Имя пользователя</label>
+        <input type="text" id="login-username" placeholder="введи username">
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input type="password" id="login-password" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" onclick="login()">Войти</button>
+    </div>
+
+    <div id="register-form" style="display:none">
+      <div class="form-group">
+        <label>Имя пользователя</label>
+        <input type="text" id="reg-username" placeholder="придумай username">
+      </div>
+      <div class="form-group">
+        <label>Пароль</label>
+        <input type="password" id="reg-password" placeholder="••••••••">
+      </div>
+      <button class="btn btn-primary" onclick="register()">Создать аккаунт</button>
+    </div>
+
+    <div class="error-msg" id="auth-error"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <div class="header">
+    <div class="header-logo">💪 SportApp</div>
+    <div class="header-user">
+      <span id="username-display"></span>
+      <button class="btn btn-danger" onclick="logout()">Выйти</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="add-form">
+      <div class="section-title">Добавить тренировку</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Тип</label>
+          <input type="text" id="w-type" placeholder="Бег, плавание...">
+        </div>
+        <div class="form-group">
+          <label>Время (мин)</label>
+          <input type="number" id="w-duration" placeholder="30">
+        </div>
+        <div class="form-group">
+          <label>Калории</label>
+          <input type="number" id="w-calories" placeholder="300">
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="addWorkout()">Сохранить тренировку</button>
+    </div>
+
+    <div class="section-title">Мои тренировки</div>
+    <div class="workout-list" id="workout-list">
+      <div class="loading">Загрузка...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API = 'http://127.0.0.1:8000';
+  let token = localStorage.getItem('token');
+  let currentUser = localStorage.getItem('username');
+
+  if (token) showApp();
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach((b, i) => {
+      b.classList.toggle('active', (i === 0) === (tab === 'login'));
+    });
+    document.getElementById('login-form').style.display = tab === 'login' ? '' : 'none';
+    document.getElementById('register-form').style.display = tab === 'register' ? '' : 'none';
+    document.getElementById('auth-error').textContent = '';
+  }
+
+  async function login() {
+    const username = document.getElementById('login-username').value;
+    const password = document.getElementById('login-password').value;
+    const form = new FormData();
+    form.append('username', username);
+    form.append('password', password);
+
+    const res = await fetch(`${API}/login`, { method: 'POST', body: form });
+    const data = await res.json();
+
+    if (!res.ok) {
+      document.getElementById('auth-error').textContent = data.detail || 'Ошибка входа';
+      return;
+    }
+
+    token = data.access_token;
+    currentUser = username;
+    localStorage.setItem('token', token);
+    localStorage.setItem('username', username);
+    showApp();
+  }
+
+  async function register() {
+    const username = document.getElementById('reg-username').value;
+    const password = document.getElementById('reg-password').value;
+
+    const res = await fetch(`${API}/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      document.getElementById('auth-error').textContent = data.detail || 'Ошибка регистрации';
+      return;
+    }
+
+    switchTab('login');
+    document.getElementById('login-username').value = username;
+    document.getElementById('auth-error').textContent = '';
+  }
+
+  function showApp() {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    document.getElementById('username-display').textContent = currentUser;
+    loadWorkouts();
+  }
+
+  function logout() {
+    token = null;
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    document.getElementById('auth-screen').style.display = 'flex';
+    document.getElementById('app-screen').style.display = 'none';
+  }
+
+  async function loadWorkouts() {
+    const res = await fetch(`${API}/workouts`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (res.status === 401) { logout(); return; }
+
+    const data = await res.json();
+    const list = document.getElementById('workout-list');
+
+    if (data.length === 0) {
+      list.innerHTML = `<div class="empty-state"><div style="font-size:40px">🏃</div><p>Нет тренировок — добавь первую!</p></div>`;
+      return;
+    }
+
+    list.innerHTML = data.map(w => `
+      <div class="workout-card">
+        <div>
+          <div class="workout-type">${w.type}</div>
+          <div class="workout-meta">
+            <span><span class="accent-dot"></span> ${w.duration} мин</span>
+            <span><span class="accent-dot"></span> ${w.calories} ккал</span>
+          </div>
+        </div>
+        <button class="btn btn-danger" onclick="deleteWorkout(${w.id})">Удалить</button>
+      </div>
+    `).join('');
+  }
+
+  async function addWorkout() {
+    const type = document.getElementById('w-type').value;
+    const duration = parseInt(document.getElementById('w-duration').value);
+    const calories = parseInt(document.getElementById('w-calories').value);
+
+    if (!type || !duration || !calories) return;
+
+    await fetch(`${API}/workouts`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ type, duration, calories })
+    });
+
+    document.getElementById('w-type').value = '';
+    document.getElementById('w-duration').value = '';
+    document.getElementById('w-calories').value = '';
+    loadWorkouts();
+  }
+
+  async function deleteWorkout(id) {
+    await fetch(`${API}/workouts/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    loadWorkouts();
+  }
+</script>
+</body>
+</html>
